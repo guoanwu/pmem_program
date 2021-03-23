@@ -98,7 +98,8 @@ int aofguard_init(struct aofguard* aofguard, int fd, int nvm_dir_fd, const char*
         ERROR(0, 0, "param <nvm_size = %lu> is too small!", nvm_size);
     if(block_count > 65536)
         ERROR(0, 0, "param <nvm_size = %lu> is too big!", nvm_size);
-    size_t nvm_file_size = 2 * sizeof(size_t) + block_count * BLOCK_SIZE;
+    //size_t nvm_file_size = 2 * sizeof(size_t) + block_count * BLOCK_SIZE;
+    size_t nvm_file_size = 2 * 64 + block_count * BLOCK_SIZE;
     int nvm_file_exist = syscall_faccessat(nvm_dir_fd, nvm_file, F_OK, 0) == 0;
     int nvm_fd;
     if(nvm_file_exist)
@@ -126,10 +127,13 @@ int aofguard_init(struct aofguard* aofguard, int fd, int nvm_dir_fd, const char*
     if(syscall_fstat(fd, &stat) != 0)
         ERROR(0, 1, "fstat(%d, &stat) failed: ", fd);
     aofguard->file.fd = fd;
-    aofguard->buffer.data = (char*)nvm_buf + 2 * sizeof(size_t);
+    //aofguard->buffer.data = (char*)nvm_buf + 2 * sizeof(size_t);
+
+    aofguard->buffer.data = (char*)nvm_buf + 2 * 64; //buffer data start from buffer + 128 bytes
+
     aofguard->buffer.capacity = block_count * BLOCK_SIZE;
     aofguard->meta.fsync_len_and_start_block = (size_t*)nvm_buf;
-    aofguard->meta.buf_end = (size_t*)nvm_buf + 1;
+    aofguard->meta.buf_end = (size_t*)((char *)nvm_buf + 64);
     if(nvm_file_exist && !reset)
     {
         size_t mixed_meta = *(aofguard->meta.fsync_len_and_start_block);
