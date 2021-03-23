@@ -78,7 +78,7 @@ int main()
     while(i--) {
       for(j=0;j<LOG_NUM;j++) 
       {
-         write(fd,logs[j],strlen(logs[j]));
+         write(fd,logs[j],strlen((const char *)logs[j]));
 	 fdatasync(fd); //in the normal code, we need to fdatasync and with the wal accellerate, we need to use the AOFGUARD_DISABLE_SYNC=yes to ignore this sync; the data sync is called in the write
       }
     }
