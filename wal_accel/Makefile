@@ -1,7 +1,7 @@
 all: wal_acc lib/libaofguard.so lib/libaofguard.a lib/libaofguard_inject.so
 
 wal_acc:lib/libaofguard.so lib/libaofguard_inject.so
-	gcc -std=gnu99 wal_acc.c -g -O0 -o wal_acc -L./lib -lpthread -Wall -laofguard -laofguard_inject 
+	gcc -std=gnu99 wal_acc.c -g -O0 -o wal_acc -L./lib -lpthread -Wall -laofguard -laofguard_inject -lpmem 
 
 lib/libaofguard.so: src/common.h src/syscall.h src/aofguard.h src/syscall.c src/aofguard.c
 	mkdir -p lib
@@ -11,13 +11,13 @@ lib/libaofguard.a: src/common.h src/syscall.h src/aofguard.h src/syscall.c src/a
 	mkdir -p lib
 	gcc -std=gnu99 -c src/syscall.c  -g -O0 -o src/syscall.o -Wall
 	gcc -std=gnu99 -c src/aofguard.c -g -O0 -o src/aofguard.o -Wall
-	ar cr lib/libaofguard.a src/syscall.o src/aofguard.o
+	ar cr lib/libaofguard.a src/syscall.o src/aofguard.o /usr/lib64/libpmem.a
 	rm -f src/syscall.o
 	rm -f src/aofguard.o
 
 lib/libaofguard_inject.so: src/common.h src/syscall.h src/sha1.h src/aofguard.h src/syscall.c src/sha1.c src/aofguard.c src/inject.c
 	mkdir -p lib
-	gcc -std=gnu99 src/syscall.c src/sha1.c src/aofguard.c src/inject.c -g -O0 -o lib/libaofguard_inject.so -fPIC -shared -lpthread -Wall
+	gcc -std=gnu99 src/syscall.c src/sha1.c src/aofguard.c src/inject.c -g -O0 -o lib/libaofguard_inject.so -fPIC -shared -lpthread -lpmem -Wall
 
 clean:
 	rm -rf lib wal_acc

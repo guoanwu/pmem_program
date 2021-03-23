@@ -1,12 +1,15 @@
 #include "common.h"
 #include "syscall.h"
 #include "aofguard.h"
-
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <emmintrin.h>
+#include <immintrin.h>
+//#include <stdint.h>
+#include <libpmem.h>
 
 #define BLOCK_SIZE      (1 << 20)
 
@@ -23,9 +26,16 @@
 static void nvm_set_64(void* ptr, long long val)
 {
     assert(((size_t)ptr & 7) == 0);
-    __builtin_ia32_movnti64(ptr, val);
+    //__builtin_ia32_movnti64(ptr, val);
+    _mm_stream_si64(ptr,val);
+    _mm_sfence();
 }
-
+#if 1
+static void nvm_memcpy(void* dst, const void* src, size_t len)
+{
+    pmem_memcpy_persist(dst,src,len);	
+}
+#else
 static void nvm_memcpy(void* dst, const void* src, size_t len)
 {
     if(!len)
@@ -72,6 +82,7 @@ static void nvm_memcpy(void* dst, const void* src, size_t len)
         __builtin_ia32_movnti64(dst, tail);
     }
 }
+#endif
 
 static void* afsync_thread(void* arg)
 {

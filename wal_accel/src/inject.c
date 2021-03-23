@@ -27,6 +27,7 @@ static size_t nvm_size;
 static regex_t fname_regex;
 static struct filedes* fd_table;
 static size_t fd_table_capacity;
+int init_done=0;
 
 static int init()
 {
@@ -63,6 +64,7 @@ static void __attribute__((constructor)) constructor()
 {
     if(!init())
         exit(1);
+    init_done=1;
 }
 
 static void get_nvm_file_name(char* buffer, const char* file)
@@ -79,7 +81,7 @@ static void get_nvm_file_name(char* buffer, const char* file)
 
 static int handle_open(const char* file, int fd)
 {
-    if(fd < 0)
+    if(fd < 0 || init_done==0)
         return 1;
     struct stat stat;
     if(syscall_fstat(fd, &stat) != 0)
