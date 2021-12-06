@@ -1,0 +1,4 @@
+1. install valgrind from https://github.com/pmem/valgrind
+2. export VALGRIND_LIB=/usr/local/libexec/valgrind/
+3. valgrind --tool=pmemcheck --help
+4. export LD_LIBRARY_PATH=/usr/local/lib64/:/usr/local/lib
