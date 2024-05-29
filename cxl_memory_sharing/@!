@@ -1,0 +1,70 @@
+crc.o: crc.c crc.h
+	gcc -c crc.c
+
+log-timestamp.o: log-timestamp.c
+	gcc -c log-timestamp.c
+
+hash_kv.o: hash_kv.c hash_kv.h
+	gcc -c hash_kv.c
+
+rw_info.o: rw_info.c rw_info.h
+	gcc -c rw_info.c -march=native -O0 -g 
+
+lock.o: lock.c lock.h
+	gcc -c lock.c
+
+lock_write.o: lock_write.c
+	gcc -c  lock_write.c -march=native -O0 -g 
+
+lock_read.o: lock_read.c
+	gcc -c lock_read.c -march=native -O0 -g 
+
+lock_write: lock_write.o crc.o rw_info.o log-timestamp.o lock.o 
+	gcc -o lock_write lock_write.o crc.o rw_info.o log-timestamp.o lock.o
+
+lock_read: lock_read.o crc.o rw_info.o log-timestamp.o lock.o
+	gcc -o lock_read lock_read.o crc.o rw_info.o log-timestamp.o lock.o
+
+lock_service.o: lock_service.c lock.h
+	gcc -c lock_service.c
+
+lock_service: lock_service.o hash_kv.o log-timestamp.o
+	gcc -o lock_service lock_service.o hash_kv.o log-timestamp.o
+
+dsa_move.o: dsa_move.c dsa_move.h
+	gcc -c dsa_move.c
+
+dsa_meta_write.o: dsa_meta_write.c
+	gcc -c dsa_meta_write.c
+
+dsa_meta_read.o: dsa_meta_read.c
+	gcc -c dsa_meta_read.c
+
+meta_write.o: meta_write.c
+	gcc -c meta_write.c -march=native -O0 -g
+
+meta_read.o: meta_read.c
+	gcc -c meta_read.c -march=native -O0 -g
+
+meta_write: meta_write.o rw_info.o crc.o
+	gcc -o meta_write meta_write.o rw_info.o crc.o
+
+meta_read: meta_read.o rw_info.o crc.o 
+	gcc -o meta_read meta_read.o rw_info.o crc.o
+
+dsa_meta_write: dsa_meta_write.o rw_info.o crc.o dsa_move.o
+	gcc -o dsa_meta_write dsa_meta_write.o rw_info.o crc.o dsa_move.o
+
+dsa_meta_read: dsa_meta_read.o rw_info.o crc.o dsa_move.o
+	gcc -o dsa_meta_read dsa_meta_read.o rw_info.o crc.o dsa_move.o
+
+sharing_mem.o: sharing_mem.c
+	gcc -c sharing_mem.c -O0 -g
+
+sharing_mem: sharing_mem.o rw_info.o crc.o log-timestamp.o
+	gcc -o sharing_mem sharing_mem.o rw_info.o crc.o log-timestamp.o
+
+all: lock_service sharing_mem lock_write lock_read lock_service meta_read meta_write dsa_meta_read dsa_meta_write
+clean: 
+	rm *.o
+	rm lock_write lock_read lock_service sharing_mem meta_read meta_write
