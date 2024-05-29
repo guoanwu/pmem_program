@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
     if (argc!= 2 ) {
         printf("please include the parameter: filepath \n");
-        printf("example: ./share_file_write /mnt/famfs/test_file");
+        printf("example: ./meta_read /mnt/famfs/test_file");
         return 0;
     }
     char * filepath =(char *)argv[1];
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 	 if (read_flag == 0x10) {
     		gettimeofday(&startVal, NULL);
 		
-		cflush(data_addr, total_size);		
+		cflushopt(data_addr, total_size);		
 		memcpy(dram_source, data_addr, total_size); //read the data from the shared file to DRAM	 	
 		
 		memset(addr,0x00,64);

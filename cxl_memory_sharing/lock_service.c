@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 #include "hash_kv.h"
 #include "log-timestamp.h"
+#include <assert.h>
 #include "lock.h"
 
 #define LISTEN_BACKLOG (5)
@@ -56,6 +57,10 @@ void handle_lock(HashTable* myHashTable, int x, int socket) {
                         setKeyValue(myHashTable, blockid, value);
 		}
         }
+	if(indicator ==  ERROR_LOCK) {
+		printf("indicator error happen\n");
+		assert(0);
+	}
 	// release lock w/o response
 	if (indicator != 0x0) {	
        		 write(socket, &lock, sizeof(lock));

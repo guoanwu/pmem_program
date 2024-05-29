@@ -75,3 +75,16 @@ void releaselock(int sock, int uuid)
         }
 	return;
 }
+
+void senderror(int sock, int uuid) 
+{
+        int lock = 0;
+        // release the write lock, if the lock received.
+        lock = uuid << 2 | ERROR_LOCK;
+        // release lock
+        if (send(sock, &lock, sizeof(int), 0) < 0) {
+            printf("send fail\n");
+        }
+        return;
+
+}	

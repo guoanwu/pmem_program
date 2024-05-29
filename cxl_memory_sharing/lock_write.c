@@ -44,8 +44,8 @@ int main(int argc, char **argv)
 
     int i;
     unsigned int size = 0u;
-    unsigned int total_size = BLOCK_SIZE; 
-    unsigned int mmap_size = BLOCK_SIZE * BLOCK_NUM + 64;
+    unsigned int total_size = LOCK_BLOCK_SIZE; 
+    unsigned int mmap_size = LOCK_BLOCK_SIZE * BLOCK_NUM + 64;
     
     int fd = open(filepath, O_RDWR, S_IRWXU);
     int prot = PROT_READ|PROT_WRITE;
@@ -61,9 +61,9 @@ int main(int argc, char **argv)
 	i = random_select_block();	
 	
 	writelock(sock,i);
-	addr = start + i * BLOCK_SIZE;
-	uint32_t crc32 = fill_block_data(addr, BLOCK_SIZE);
-	printMemory(addr+BLOCK_SIZE-128, 128);   
+	addr = start + i * LOCK_BLOCK_SIZE;
+	uint32_t crc32 = fill_block_data(addr, LOCK_BLOCK_SIZE);
+	printMemory(addr + LOCK_BLOCK_SIZE-128, 128);   
 	gettimeofday(&endVal, NULL);
     	microseconds = (endVal.tv_sec - startVal.tv_sec) * 1000000 + (endVal.tv_usec - startVal.tv_usec);
 	//printMemory(addr + META_SIZE + i * total_size + total_size-16, 16);

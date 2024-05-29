@@ -1,17 +1,17 @@
 crc.o: crc.c crc.h
-	g++ -c crc.c
+	g++ -c crc.c -O0 -g 
 
 log-timestamp.o: log-timestamp.c
-	g++ -c log-timestamp.c
+	g++ -c log-timestamp.c -O0 -g
 
 hash_kv.o: hash_kv.c hash_kv.h
-	g++ -c hash_kv.c
+	g++ -c hash_kv.c -O0 -g
 
 rw_info.o: rw_info.c rw_info.h
 	g++ -c rw_info.c -march=native -O0 -g 
 
 lock.o: lock.c lock.h
-	g++ -c lock.c
+	g++ -c lock.c -O0 -g
 
 lock_write.o: lock_write.c
 	g++ -c  lock_write.c -march=native -O0 -g 
@@ -26,19 +26,19 @@ lock_read: lock_read.o crc.o rw_info.o log-timestamp.o lock.o
 	g++ -o lock_read lock_read.o crc.o rw_info.o log-timestamp.o lock.o
 
 lock_service.o: lock_service.c lock.h
-	g++ -c lock_service.c
+	g++ -c lock_service.c -O0 -g
 
 lock_service: lock_service.o hash_kv.o log-timestamp.o
 	g++ -o lock_service lock_service.o hash_kv.o log-timestamp.o
 
 dsa_move.o: dsa_move.c dsa_move.h
-	g++ -c dsa_move.c -I /usr/inlcude
+	g++ -c dsa_move.c -I /usr/inlcude -O0 -g
 
 dsa_meta_write.o: dsa_meta_write.c
-	g++ -c dsa_meta_write.c -I /usr/inlcude
+	g++ -c dsa_meta_write.c -I /usr/inlcude -O0 -g
 
 dsa_meta_read.o: dsa_meta_read.c
-	g++ -c dsa_meta_read.c -I /usr/inlcude
+	g++ -c dsa_meta_read.c -I /usr/inlcude -O0 -g
 
 meta_write.o: meta_write.c
 	g++ -c meta_write.c -march=native -O0 -g

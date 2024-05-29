@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     if (argc!= 2 ) {
         printf("please include the parameter: filepath \n");
-        printf("example: ./share_file_write /mnt/famfs/test_file");
+        printf("example: ./meta_write /mnt/famfs/test_file");
         return 0;
     }
     char * filepath =(char *)argv[1];
@@ -52,18 +52,16 @@ int main(int argc, char **argv)
          fill_buffer_random((void *)dram_source,total_size-sizeof(uint32_t));
 	 uint32_t crc32 = calculate_crc32(dram_source,total_size-sizeof(uint32_t));
          *(uint32_t *)(dram_source + total_size-sizeof(uint32_t)) = crc32;
-
-	 //_mm_clflushopt((char *)addr);
+	 cflushopt(addr, 64);
 	 char write_flag = *(char *)addr;
 	 if (write_flag == 0x00) {
 	 	printMemory(dram_source+total_size-256, 256);
 		gettimeofday(&startVal, NULL);
-		
 		memcpy(data_addr, dram_source, total_size); // write the share file	 	
 		cflush(data_addr, total_size); // flush the data
+		
 		memset(addr,0x10,64);
-    		cflush(addr, 64);
-
+		cflush(addr, 64);
 		gettimeofday(&endVal, NULL);
     		microseconds = (endVal.tv_sec - startVal.tv_sec) * 1000000 + (endVal.tv_usec - startVal.tv_usec);
 		printf("write total_size: %d, crc32 value: %d done! time=%ld microseconds\n", total_size-4, crc32, microseconds);

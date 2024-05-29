@@ -7,11 +7,12 @@
 
 #define BLOCK_NUM 255 
 #define BLOCK_SIZE 8*1024*1024
+#define LOCK_BLOCK_SIZE 128 
 #define FLUSH_ALIGN 64
 #define META_SIZE 64
 
 //if use the hardware cache coherency, define the flag
-#define HW_CACHE_COH
+//#define HW_CACHE_COH
 
 uint32_t fill_block_data(void *block,size_t block_size);
 void cflush(void * addr, size_t len);

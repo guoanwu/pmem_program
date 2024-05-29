@@ -62,6 +62,7 @@ int main(int argc, char **argv)
          fill_buffer_random((void *)dram_source,total_size-sizeof(uint32_t));
 	 uint32_t crc32 = calculate_crc32(dram_source,total_size-sizeof(uint32_t));
          *(uint32_t *)(dram_source + total_size-sizeof(uint32_t)) = crc32;
+	 
 	 cflushopt(addr, 64);
 	 char write_flag = *(char *)addr;
 	 if (write_flag == 0x00) {
@@ -74,7 +75,6 @@ int main(int argc, char **argv)
 
 		gettimeofday(&endVal, NULL);
     		microseconds = (endVal.tv_sec - startVal.tv_sec) * 1000000 + (endVal.tv_usec - startVal.tv_usec);
-	
 		printf("write total_size: %d, crc32 value: %d done! time=%ld microseconds\n", total_size-4, crc32, microseconds);
 	 }
 	 else {
