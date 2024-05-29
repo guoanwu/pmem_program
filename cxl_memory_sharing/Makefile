@@ -53,10 +53,10 @@ meta_read: meta_read.o rw_info.o crc.o
 	g++ -o meta_read meta_read.o rw_info.o crc.o
 
 dsa_meta_write: dsa_meta_write.o rw_info.o crc.o dsa_move.o
-	g++ -o dsa_meta_write dsa_meta_write.o rw_info.o crc.o dsa_move.o -L /usr/lib64 -ldml -lpthread
+	g++ -o dsa_meta_write dsa_meta_write.o rw_info.o crc.o dsa_move.o -L /usr/lib64 -ldml -lpthread -ldl
 
 dsa_meta_read: dsa_meta_read.o rw_info.o crc.o dsa_move.o
-	g++ -o dsa_meta_read dsa_meta_read.o rw_info.o crc.o dsa_move.o -L /usr/lib64 -ldml -lpthread
+	g++ -o dsa_meta_read dsa_meta_read.o rw_info.o crc.o dsa_move.o -L /usr/lib64 -ldml -lpthread -ldl
 
 sharing_mem.o: sharing_mem.c
 	g++ -c sharing_mem.c -O0 -g
