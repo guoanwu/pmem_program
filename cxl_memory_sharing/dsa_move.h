@@ -4,7 +4,7 @@
 #include "dml/dml.h"
 #include <stddef.h>
 // customer can define the job number and move size
-#define DSA_JOB_NUM 128
+#define DSA_JOB_NUM 1
 #define DSA_MOVE_BLOCK 16384 //16k once
 
 dml_job_t ** init_dsa(int job_num);

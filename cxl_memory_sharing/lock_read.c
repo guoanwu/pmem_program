@@ -53,14 +53,14 @@ int main(int argc, char **argv)
     char * start = addr; 
     
     while (1) {
-	gettimeofday(&startVal, NULL);
 	i = random_select_block();
 	readlock(sock,i);	
 	LOG("block %d get the read lock\n", i);
+	
+	gettimeofday(&startVal, NULL);
 	addr = start + i * LOCK_BLOCK_SIZE;
         cflushopt(addr, LOCK_BLOCK_SIZE);		
 	memcpy(data, addr, LOCK_BLOCK_SIZE); //read the data from the shared file to DRAM	 	
-	    
 	gettimeofday(&endVal, NULL);
         microseconds = (endVal.tv_sec - startVal.tv_sec) * 1000000 + (endVal.tv_usec - startVal.tv_usec);
 	uint32_t crc32 = calculate_crc32(data, LOCK_BLOCK_SIZE - sizeof(uint32_t));
@@ -68,14 +68,8 @@ int main(int argc, char **argv)
 	uint32_t source_crc32 = *(uint32_t *)(addr + LOCK_BLOCK_SIZE - sizeof(uint32_t));
 	LOG("read block=%d, size: %d, time=%ld us, calculated crc32=0x%x, data_crc32=0x%x, source crc32=0x%x\n", i, LOCK_BLOCK_SIZE , microseconds, crc32, data_crc32, source_crc32);
 	if(crc32 != source_crc32) {
-		//i = memcmp(data, addr, LOCK_BLOCK_SIZE);
-	       	//LOG("crc32 check fail, i=%d\n",i);
-		printf("data in the memory\n");
-		printMemory(data, LOCK_BLOCK_SIZE);
-		printf("data in the cxl\n");
-		printMemory(addr, LOCK_BLOCK_SIZE);
-		//senderror(sock, i);
-		//assert(crc32 == source_crc32);
+	    printf("crc32 not match\n");
+	    //senderror(sock, i);
 	}
 	releaselock(sock,i);
 	LOG("block %d release the read lock\n", i);

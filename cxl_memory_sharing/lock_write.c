@@ -53,21 +53,27 @@ int main(int argc, char **argv)
     printf("the filepath=%s address=%p\n", filepath, addr);
     char *start = addr;
 
+    uint8_t * data = (uint8_t *) malloc(LOCK_BLOCK_SIZE);
     int lock;
     // prepare 2M dram with the data
     while (1) {
-    	
-	gettimeofday(&startVal, NULL);
 	i = random_select_block();	
-	
+	fill_buffer_random((void *)data, total_size-sizeof(uint32_t));	
+    	uint32_t crc32 = calculate_crc32(data, LOCK_BLOCK_SIZE - sizeof(uint32_t));
+    	*(uint32_t *)(data + LOCK_BLOCK_SIZE - sizeof(uint32_t)) = crc32;
+
 	writelock(sock,i);
+
+	gettimeofday(&startVal, NULL);
 	addr = start + i * LOCK_BLOCK_SIZE;
-	uint32_t crc32 = fill_block_data(addr, LOCK_BLOCK_SIZE);
-	printMemory(addr + LOCK_BLOCK_SIZE-128, 128);   
+	//uint32_t crc32 = fill_block_data(addr, LOCK_BLOCK_SIZE);
+	memcpy(addr, data, LOCK_BLOCK_SIZE);
+	cflush(addr, LOCK_BLOCK_SIZE);
 	gettimeofday(&endVal, NULL);
     	microseconds = (endVal.tv_sec - startVal.tv_sec) * 1000000 + (endVal.tv_usec - startVal.tv_usec);
-	//printMemory(addr + META_SIZE + i * total_size + total_size-16, 16);
+	printMemory(addr + LOCK_BLOCK_SIZE-128, 128);   
 	LOG("write block %d, crc32=0x%x, total_size: %d, time=%ld microseconds\n", i, crc32, total_size, microseconds);
+
 	releaselock(sock, i);
     }
  

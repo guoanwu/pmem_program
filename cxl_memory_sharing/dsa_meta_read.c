@@ -59,8 +59,8 @@ int main(int argc, char **argv)
     		gettimeofday(&startVal, NULL);
 		// clear the data address cache, read the data from the CXL memory instead of cache
 		cflushopt(data_addr, total_size);		
-		dsa_move_data(jobs, DSA_JOB_NUM, data_addr, dram_source, total_size, DSA_MOVE_BLOCK);
-
+		//dsa_move_data(jobs, DSA_JOB_NUM, data_addr, dram_source, total_size, DSA_MOVE_BLOCK);
+		dsa_move_data(jobs, DSA_JOB_NUM, data_addr, dram_source, total_size, total_size);
 		memset(addr,0x00,64);
     		cflush(addr,64);
 		gettimeofday(&endVal, NULL);

@@ -51,7 +51,10 @@ uint32_t fill_block_data(void *block,size_t block_size) {
 }
 
 #ifndef HW_CACHE_COH
-void cflush(void * addr, size_t len)
+
+#define FLUSH_OPT
+static inline void 
+__cflush(void * addr, size_t len)
 {
    long int uptr;
    for(uptr =(long int)addr & ~(FLUSH_ALIGN-1) ; uptr <  (long int)addr+len-64; uptr+=FLUSH_ALIGN)
@@ -59,18 +62,53 @@ void cflush(void * addr, size_t len)
      _mm_clflushopt((void *)uptr);
    }
    _mm_sfence();
-   _mm_clflush((void *)uptr);
+   _mm_clflushopt((void *)uptr);
    char a = *(char *)uptr;
-   //printf("final value a=%d\n", a);
 }
 
-void cflushopt(void * addr, size_t len)
+static inline void
+__cflushopt(void * addr, size_t len)
 {
    long int uptr;
    for(uptr =(long int)addr & ~(FLUSH_ALIGN-1) ; uptr <  (long int)addr+len; uptr+=FLUSH_ALIGN)
    {
      _mm_clflushopt((void *)uptr);
    }
+}
+
+static inline void
+__flush_processor_cache(const void *addr, size_t len)
+{
+    int64_t i;
+    const char *buffer = (const char *)addr;
+
+    /* Flush the processor cache for the target range */
+    for (i=0; i<len; i+=CL_SIZE)
+    	//_mm_clflushopt((void *)&buffer[i]);
+	__builtin_ia32_clflush(&buffer[i]);
+
+}
+
+void cflush(void * addr, size_t len)
+{
+#ifndef FLUSH_OPT    
+    __sync_synchronize();
+    __flush_processor_cache(addr, len);
+    __sync_synchronize();
+#else
+    __cflush(addr, len);   
+#endif
+}
+
+
+void cflushopt(void * addr, size_t len)
+{
+#ifndef FLUSH_OPT	
+    __flush_processor_cache(addr, len);
+    __sync_synchronize();
+#else
+    __cflushopt(addr, len);    
+#endif
 }
 #else
 void cflush(void * addr, size_t len)
